@@ -60,5 +60,11 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub</name>
+			<url>https://npm.pkg.github.com/harshanirudh/vaccine-tracker</url>
+		</repository>
+	</distributionManagement>
 </project>
