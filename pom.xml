@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.harsha.tracker</groupId>
 	<artifactId>vaccine-tracker</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>vaccine-tracker</name>
 	<description>For alerts and tracking vaccination</description>
 	<properties>
