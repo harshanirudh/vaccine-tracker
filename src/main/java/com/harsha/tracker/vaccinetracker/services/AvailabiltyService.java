@@ -39,8 +39,6 @@ public class AvailabiltyService {
 
 	@Autowired
 	private ObjectMapper mapper;
-	@Value(value = "${email.to}")
-	private String recipients;
 
 	public static boolean isHydEmailSent = false;
 	public static boolean isRREmailSent = false;
@@ -54,7 +52,6 @@ public class AvailabiltyService {
 			if (log.isDebugEnabled())
 				log.debug("Checking for date: " + date + ",for district: " + district_id + ", for vaccine: " + vaccine);
 			Centers body = service.findAppointmentCalendarByDistrict(district_id, date).block();
-//			log.info(body.toString());
 			List<Center> res = body.getCenters().stream()
 					.filter(center -> center.getSessions().stream()
 							.anyMatch(session -> session.getAvailable_capacity() > 0
@@ -63,11 +60,9 @@ public class AvailabiltyService {
 			if (res.size() > 0) {
 				String[] recipients = subsDao.findSubscriptionByJobId(jobId).stream().map(rec -> rec.getEMAIL())
 						.toArray(String[]::new);
-//				emailSender.sendSimpleMessageBcc(recipients, subjectBuilder(vaccine).toString(),
-//						mapper.writerWithDefaultPrettyPrinter().writeValueAsString(res));
-				emailSender.sendMimeMessageBcc(recipients, subjectBuilder(vaccine).toString(),
-						messageBuilder(res));
-
+				if (recipients.length>0) {
+					emailSender.sendMimeMessageBcc(recipients, subjectBuilder(vaccine).toString(), messageBuilder(res));
+				}
 				isEmailSent = true;
 				log.info("EMAIL SENT for district id" + district_id);
 			}
@@ -87,31 +82,28 @@ public class AvailabiltyService {
 	}
 
 	private String messageBuilder(List<Center> result) {
-		StringBuilder finalMessage=new StringBuilder();
+		StringBuilder finalMessage = new StringBuilder();
 		int size = result.size();
 		for (int i = 0; i < size; i++) {
 			Center currentObj = result.get(i);
 			String center = currentObj.getName();
 			String address = currentObj.getAddress() + "," + currentObj.getBlock_name() + ","
-					+ currentObj.getDistrict_name() + "," + currentObj.getState_name()+","+currentObj.getPincode();
-			String fees=currentObj.getFee_type();
+					+ currentObj.getDistrict_name() + "," + currentObj.getState_name() + "," + currentObj.getPincode();
+			String fees = currentObj.getFee_type();
 			List<Session> sessions = currentObj.getSessions();
-			int sessionSize=sessions.size();
-			String head= String.format("<table style=\"border: 1px solid black;border-collapse: collapse;\" rules=\"cols\">\r\n" + 
-					"<thead>\r\n" + 
-					"<th colspan=%s> %s <br/>%s<br/>%s</th>\r\n" + 
-					"</thead>\r\n" + 
-					"<tr style=\"border: 1px solid black;\" >", sessionSize,center,address,fees);
+			int sessionSize = sessions.size();
+			String head = String
+					.format("<table style=\"border: 1px solid black;border-collapse: collapse;\" rules=\"cols\">\r\n"
+							+ "<thead>\r\n" + "<th colspan=%s> %s <br/>%s<br/>%s</th>\r\n" + "</thead>\r\n"
+							+ "<tr style=\"border: 1px solid black;\" >", sessionSize, center, address, fees);
 			finalMessage.append(head);
-			for(int j=0;j<sessionSize;j++) {
-				String data= String.format("<td> \r\n" + 
-						"	Date:%s<br/>\r\n" + 
-						"	%s<br/>\r\n" + 
-						"	Available:%d<br/>\r\n" + 
-						"	Min Age:%d<br/>\r\n" + 
-						"	Slots:  %s\r\n" + 
-						"	</td>", sessions.get(j).getDate(),sessions.get(j).getVaccine(),
-						sessions.get(j).getAvailable_capacity(),sessions.get(j).getMin_age_limit(),sessions.get(j).getSlots().toString());
+			for (int j = 0; j < sessionSize; j++) {
+				String data = String.format(
+						"<td> \r\n" + "	Date:%s<br/>\r\n" + "	%s<br/>\r\n" + "	Available:%d<br/>\r\n"
+								+ "	Min Age:%d<br/>\r\n" + "	Slots:  %s\r\n" + "	</td>",
+						sessions.get(j).getDate(), sessions.get(j).getVaccine(),
+						sessions.get(j).getAvailable_capacity(), sessions.get(j).getMin_age_limit(),
+						sessions.get(j).getSlots().toString());
 				finalMessage.append(data);
 			}
 			finalMessage.append("</tr></table> <hr>");
