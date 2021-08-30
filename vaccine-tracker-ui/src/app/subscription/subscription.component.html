@@ -1,0 +1,42 @@
+<br>
+<p *ngIf="type" class="mat-subheading-1">Subscribe to alerts</p>
+<p *ngIf="!type" class="mat-subheading-1">Unsubscribe to alerts</p>
+
+  <div class="center">
+    <mat-spinner *ngIf=load style="margin:0 auto;"></mat-spinner>
+  </div>
+<form [formGroup]="vaccineForm" (ngSubmit)="onSubmit(vaccineForm,formDirective)" #formDirective="ngForm">
+  <mat-form-field appearance="fill">
+    <mat-label>Districts</mat-label>
+    <mat-select formControlName="districtId" name="district">
+      <mat-option *ngFor="let district of districts" [value]="district.id">
+        {{district.value}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <hr>
+  <mat-form-field appearance="fill">
+    <mat-label>Vaccine</mat-label>
+    <mat-select formControlName="vaccineType" name="vaccine">
+      <mat-option *ngFor="let vaccine of vaccines" [value]="vaccine.value">
+        {{vaccine.value}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <hr>
+  <mat-form-field>
+    <mat-label>Email</mat-label>
+    <input type="email" matInput formControlName="email" placeholder="Ex. pat@example.com">
+    <mat-error *ngIf="vaccineForm.get('email')!.hasError('email') && !vaccineForm.get('email')!.hasError('required')">
+      Please enter a valid email address
+    </mat-error>
+    <mat-error *ngIf="vaccineForm.get('email')!.hasError('required')">
+      Email is <strong>required</strong>
+    </mat-error>
+  </mat-form-field>
+  <br>
+  <div style="text-align: center;">
+    <button mat-raised-button color="primary" *ngIf=type [disabled]="vaccineForm.invalid">Subscribe</button>
+    <button mat-raised-button color="warn" *ngIf=!type [disabled]="vaccineForm.invalid">Unsubscribe</button>
+  </div>
+</form>

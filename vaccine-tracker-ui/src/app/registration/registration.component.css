@@ -1,0 +1,33 @@
+#card{
+  /* height: 100px;
+  width: 300px; */
+  /* display: flex; */
+  /* justify-content: center; */
+  /* align-items: center; */
+}
+#tabGroup{
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+.mat-card-header{
+  /* background-color:rgba(90, 163, 231, 0.548) !important; */
+  background-color: indigo !important;
+  color: whitesmoke;
+  padding:3px !important;
+  display: flex;
+  justify-content: center;
+
+}
+.mat-card-title{
+  text-align: center;
+}
+ .mat-card{
+  padding:0 !important;
+}
+
+.mat-card-content{
+  padding:5px !important;
+}
+
+
